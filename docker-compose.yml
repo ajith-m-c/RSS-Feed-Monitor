@@ -23,3 +23,29 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
+      - redis
+  
+  celery:
+    build: .
+    command: celery -A feedmonitor worker -l info
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./code/:/usr/src/app/
+    depends_on:
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A feedmonitor beat -l info
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./code:/usr/src/app
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6-alpine

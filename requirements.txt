@@ -11,3 +11,4 @@ ipython==7.30.1
 coverage==6.2
 
 celery==4.4.7
+redis
